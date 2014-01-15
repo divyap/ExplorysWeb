@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,13 +25,16 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.client.RestTemplate;
+
+import com.explorys.business.PatientInfo;
 
 
 @Controller
 @RequestMapping("/movie")
 
 
-public class MasterController {
+public class MasterController{
 
    	protected final Log logger = LogFactory.getLog(getClass());
    	
@@ -48,7 +53,35 @@ public class MasterController {
 	
 	PreparedStatement ps = null;
 	ResultSet rs = null;
+	//RestTemplate rest = new RestTemplate();
+	Map<String, String> vars = new HashMap<String,String> ();
+	/*
+	@RequestMapping(value = "/{name}", method = RequestMethod.GET)
+	public String getMovie(@PathVariable String name, ModelMap model) {
+ 
+		model.addAttribute("movie", name);
+		return "list";
+ 
+	}
+ 
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String getDefaultMovie(ModelMap model) {
+ 
+		model.addAttribute("movie", "this is default movie");
+		return "list";
+ 
+	}
+	*/
 	
+	private PatientInfo getExplorysPatient() {
+		return null;
+		//Room room = restTemplate.getForObject(
+			//	  "http://example.com/hotels/{hotelId}/rooms/{roomId}", 
+				//  Room.class, vars);
+	}
+	
+	
+	@SuppressWarnings("rawtypes")
 	private ArrayList getTestData() {
 		ArrayList testData = new ArrayList();
 		
@@ -137,22 +170,5 @@ public class MasterController {
     	return new ModelAndView("index", "testData", testData);
 
 	}
-	
-	@RequestMapping(value = "/{name}", method = RequestMethod.GET)
-	public String getMovie(@PathVariable String name, ModelMap model) {
- 
-		model.addAttribute("movie", name);
-		return "list";
- 
-	}
- 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String getDefaultMovie(ModelMap model) {
- 
-		model.addAttribute("movie", "this is default movie");
-		return "list";
- 
-	}
-	
   
 }
