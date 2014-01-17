@@ -29,9 +29,9 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
-  	<taglib>
+  <taglib>
 		<taglib-uri>/spring</taglib-uri>
 		<taglib-location>/WEB-INF/spring.tld</taglib-location>
-	</taglib>
-  
+  </taglib>
+ 
 </web-app>

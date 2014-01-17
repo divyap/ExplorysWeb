@@ -12,7 +12,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <%@ taglib prefix="str"	uri="http://jakarta.apache.org/taglibs/string-1.1"%>
 <%@ taglib prefix="spring" uri="/spring" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -37,13 +37,12 @@ String user = (String)request.getSession().getAttribute("userId");
 %>
 <body style="background-color: #D3EDEB">
 
-<pre class="style18">TM</pre>
-<img alt="" class="style11" height="100" src="/TeenSurvey/images/TeenSleep-high-res.png" width="125" style="float: left">&nbsp;&nbsp;&nbsp;
+<img alt="" class="style11" height="125" src="/ExplorysWeb/images/SJHS-logo.jpg" width="175" style="float: left">&nbsp;&nbsp;&nbsp;
 <br>
 <p style="style8" style="height: 22px"><em style="margin-left: 640px"></em>
 </p>
 <br>
-<p style="text-align:center; font-size:x-large; font-weight:bold">Teen Survey Administration Site</p>
+<h1 style="text-align:center;">Explorys Web-Search </h1>
 <br>
 <%
 if (user == null) {

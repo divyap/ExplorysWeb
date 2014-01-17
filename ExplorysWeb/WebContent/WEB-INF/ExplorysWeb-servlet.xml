@@ -3,6 +3,10 @@
 <beans>
 	<bean id="master" class="com.explorys.web.MasterController">
 	</bean>
+	<bean id="patinfo" class="com.explorys.web.PatientInfoController">
+	    <property name="appConfig" ref="appConfig" />
+	    <property name="restTemplate" ref="restTemplate"/>
+	</bean>
 	<!--	<bean id="decide" class="com.explorys.web.DecideController">
 	</bean>
 	<bean id="validateDrug" class="com.explorys.web.DrugInfoValidator">
@@ -70,6 +74,9 @@
 				<entry key="/logon.htm">
 					<ref bean="master" />
 				</entry>
+				<entry key="/patient.htm">
+					<ref bean="patinfo" />
+				</entry>
 			</map>
 		</property>
 	</bean> 
@@ -85,5 +92,19 @@
 			<value>.jsp</value>
 		</property>
 	</bean>
+	<bean id="appConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+   		<property name="location" >
+      		<value>/WEB-INF/app.properties</value>
+   		</property>
+	</bean>
+
+	<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <property name="messageConverters">
+            <list>
+                <bean id="messageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+                </bean>
+            </list>
+        </property>
+    </bean>
 
 </beans>

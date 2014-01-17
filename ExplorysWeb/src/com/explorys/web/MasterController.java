@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.logging.Log;
@@ -31,10 +33,8 @@ import com.explorys.business.PatientInfo;
 
 
 @Controller
-@RequestMapping("/movie")
 
-
-public class MasterController{
+public class MasterController extends AbstractController{
 
    	protected final Log logger = LogFactory.getLog(getClass());
    	
@@ -46,40 +46,8 @@ public class MasterController{
 	BasicDataSource ds = (BasicDataSource) ctx.getBean("dataSource");
 	
 	Connection c = null;
-	// Open a database connection using Spring's DataSourceUtils
-	//Connection c = DataSourceUtils.getConnection(ds);
-		
-	//JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-	
 	PreparedStatement ps = null;
 	ResultSet rs = null;
-	//RestTemplate rest = new RestTemplate();
-	Map<String, String> vars = new HashMap<String,String> ();
-	/*
-	@RequestMapping(value = "/{name}", method = RequestMethod.GET)
-	public String getMovie(@PathVariable String name, ModelMap model) {
- 
-		model.addAttribute("movie", name);
-		return "list";
- 
-	}
- 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String getDefaultMovie(ModelMap model) {
- 
-		model.addAttribute("movie", "this is default movie");
-		return "list";
- 
-	}
-	*/
-	
-	private PatientInfo getExplorysPatient() {
-		return null;
-		//Room room = restTemplate.getForObject(
-			//	  "http://example.com/hotels/{hotelId}/rooms/{roomId}", 
-				//  Room.class, vars);
-	}
-	
 	
 	@SuppressWarnings("rawtypes")
 	private ArrayList getTestData() {
@@ -104,22 +72,19 @@ public class MasterController{
 					rs = ps.executeQuery();
 				}
 			}
-    	    
-     	    int size =0;  
-    	    if (rs != null){  
-    	      rs.beforeFirst();  
-    	      rs.last();  
-    	      size = rs.getRow();  
-    	      logger.info("Total number of records==>" + size);
-    	      rs.beforeFirst(); 
+    		
+     	    int size = 0;
+    		if (rs != null){  
+         	    size = rs.getFetchSize();  
     	    }
     	    
     	    if(size == 0) {
     	    	logger.error("No records found ..");
     	    }else {
-    	    	
+    	    	logger.error("records size is =>" + size);
     	    	while(rs.next()) {
 	    	        String key = rs.getString(1);
+	    	        logger.info("Key==>" + key);
 	    	        testData.add(key);
     	    	}
     	    }
@@ -133,7 +98,7 @@ public class MasterController{
     	    // something has failed and we print a stack trace to analyze the error
     	    ex.printStackTrace();
     	    // ignore failure closing connection
-    	    //try { c.close(); } catch (SQLException e) {e.printStackTrace(); }
+    	    try { c.close(); } catch (SQLException e) {e.printStackTrace(); }
         }finally {
             // Always make sure result sets and statements are closed,
             // and the connection is returned to the pool
@@ -156,19 +121,27 @@ public class MasterController{
 		return testData;
 	}
 	
-	
+	/*
+	@RequestMapping(value = "/redirect", method = {RequestMethod.POST}, params = "developer")
+	public ModelAndView developerMethod(){
+		
+		return new ModelAndView("index");
+	}*/
+
+
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
-  		logger.info("====== inside masterController-> handleRequestInternal =======");
+  		logger.info("====== inside MasterController-> handleRequestInternal =======");
 		
 		HttpSession session = request.getSession();
-    	
-    	@SuppressWarnings("rawtypes")
-		ArrayList testData = getTestData();
 
-    	return new ModelAndView("index", "testData", testData);
+		//@SuppressWarnings("rawtypes")
+		//ArrayList testData = getTestData();
+
+    	return new ModelAndView("index");
 
 	}
+
   
 }

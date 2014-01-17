@@ -43,6 +43,7 @@ import com.explorys.business.UserList;
 
 
 
+@SuppressWarnings("deprecation")
 public class UserSurveyController extends AbstractController{
 
    	protected final Log logger = LogFactory.getLog(getClass());
