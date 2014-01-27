@@ -1,6 +1,8 @@
 package com.explorys.business;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+
 import org.springframework.context.ApplicationContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -10,7 +12,7 @@ public class Credentials {
 
     private String password;
     
-    private String role;
+    private ArrayList<String> ministryList;
 
     private ApplicationContext ctx;
     
@@ -70,11 +72,12 @@ public class Credentials {
 		return session;
 	}
 
-	public void setRole(String role) {
-		this.role = role;
+	public void setMinistryList(ArrayList<String> ministryList) {
+		this.ministryList = ministryList;
 	}
 
-	public String getRole() {
-		return role;
+	public ArrayList<String> getMinistryList() {
+		return ministryList;
 	}
+
 }

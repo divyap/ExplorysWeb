@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpSession;
 
@@ -12,10 +15,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.explorys.business.Credentials;
+import com.explorys.business.PatientInfo;
+import com.explorys.business.UserInfo;
 
 
 
@@ -30,21 +40,33 @@ public class LogonValidator implements Validator {
 	BasicDataSource ds = (BasicDataSource) ctx.getBean("dataSource");
 	
 	Connection c = null;
-	// Open a database connection using Spring's DataSourceUtils
-	//Connection c = DataSourceUtils.getConnection(ds);
-		
-	//JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-	
 	PreparedStatement ps = null;
 	ResultSet rs = null;
-	
+
+	private Properties appConfig;
+	private RestTemplate restTemplate;
+
+	public void setAppConfig(Properties config) {
+	   this.appConfig = config;
+	}
+	 
+	public void setRestTemplate(RestTemplate rest) {
+		   this.restTemplate = rest;
+	}
+		
     public boolean supports(Class clazz) {
         return clazz.equals(Credentials.class);
+    }
+    
+    public static HttpSession getHTTPSession() {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        return attr.getRequest().getSession(true); // true == allow create
     }
     
     public void validate(Object obj, Errors errors) {
     	logger.info("==========Inside LogonValidator -> validate method===========");
         Credentials credentials = (Credentials) obj;
+		String loginURL = (String) appConfig.get("sjhs.url.login");
         if (credentials == null) {
             errors.rejectValue("username", "error.login.not-specified", null,
                     "Value required.");
@@ -62,90 +84,37 @@ public class LogonValidator implements Validator {
 	       		errors.rejectValue("password", "error.login.not-specified",
                             null, "password is empty. try admin/admin");
             }
-
-        	try{
-        	    // retrieve a list of users/password
-        		String psQuery = "select USER_ID, PASSWORD, ROLE from surveyserver.Survey_User" 
-        							+ " where USER_ID = '"	+ credentials.getUsername() + "'";
-        		logger.info("Prepared Sql Query ==>" + psQuery);
-        		
-        		c = ds.getConnection();
-        		if(c!= null && c.isClosed()) {
-    				logger.error("Connection is CLOSED!");
-    				c = ds.getConnection();
-    			} else {
-    				if(c == null) {
-    					logger.error("Connection is NULL. Creating new connection object...");
-    					c = ds.getConnection();
-    				}else {
-    					logger.info("Connection is active.. creating prepared statement and executing query");
-    					ps = c.prepareStatement(psQuery);
-    					rs = ps.executeQuery();
-    				}
-    			}
-        	    
-         	    int size =0;  
-        	    if (rs != null){  
-        	      rs.beforeFirst();  
-        	      rs.last();  
-        	      size = rs.getRow();  
-        	    }
-        	    
-        	    if(size == 0) {
-        	    	logger.error("Incorrect Username ..");
-        	    	errors.rejectValue("username", "error.login.invalid-user",
-                            null, "Incorrect Username.");
-        	    }else if(size == 1) {
-        	        String user = rs.getString("USER_ID");
-        	        String password = rs.getString("PASSWORD");
-        	        String role = rs.getString("ROLE");
-        	        logger.info("username ==>" + user);
-        	        logger.info("password ==>" + password);
-        	        logger.info("role ==>" + role);
-        	        
-        	       	if (credentials.getPassword().equals(password) == false) {
-        	       		logger.error("Incorrect password ..");
-        	       		errors.rejectValue("password", "error.login.invalid-pass",
-                                    null, "Incorrect Password.");
-                    }else {
-                    	logger.info("successful login!! ==>" + user);
-                    }
-        	        
-        	    } else {
-        	    	logger.error("more than one Users with same username ..");
-        	    	errors.rejectValue("username", "error.login.more-user",
-                            null, "more than one Users with same username ..");
-        	    }
-        	    rs.close();
-        	    rs = null;
-        	    ps.close();
-        	    ps = null;
-        	    c.close();
-        	    c = null;
-        	} catch (SQLException ex) {
-        	    // something has failed and we print a stack trace to analyze the error
-        	    ex.printStackTrace();
-        	    // ignore failure closing connection
-        	    //try { c.close(); } catch (SQLException e) {e.printStackTrace(); }
-            }finally {
-                // Always make sure result sets and statements are closed,
-                // and the connection is returned to the pool
-                if (rs != null) {
-                  try { rs.close(); } catch (SQLException e) { ; }
-                  rs = null;
-                }
-                
-                if (ps != null) {
-                  try { ps.close(); } catch (SQLException e) { ; }
-                  ps = null;
-                }
-                
-                if (c != null) {
-                  try { c.close(); } catch (SQLException e) { ; }
-                  c = null;
-                }
-            } //end finally
-            
+            String userid = credentials.getUsername();
+            String password = credentials.getPassword();
+            logger.info("userId and Password from logi page==>" + userid + " " + password);
+    		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+    	    // Add the Jackson Message converter
+    	    messageConverters.add(new MappingJacksonHttpMessageConverter());
+    	    // Add the message converters to the restTemplate
+    	    restTemplate.setMessageConverters(messageConverters);
+    	    // Prepare URL
+    	    String URL = loginURL + "userid=" + userid + "&" + "pwd=" + password;
+    	    logger.info("url for login ==>" + URL);
+    	    UserInfo userInfo = (UserInfo) restTemplate.getForObject(URL, UserInfo.class);
+            if(userInfo != null) {
+            	Integer logVal = userInfo.getLogin();
+            	if(logVal != null) {
+            		if(logVal.intValue() == 0) {
+            			logger.error("Incorrect Username ..");
+            			errors.rejectValue("username", "error.login.invalid-user",
+            								null, "Incorrect Username.");
+            		}else if(logVal.intValue() == 1) {
+            			HttpSession session = getHTTPSession();
+            	    	session.setAttribute("userId", userInfo.getUserid());
+            	    	session.setAttribute("userInfo", userInfo);
+            			logger.info("successful login!! ==>" + userInfo.getUserid());
+            		}
+            	}else {
+            		logger.info("Login Value is null from userInfo Object" + logVal);
+            	}
+            } else {
+            	logger.info("userInfo Object is null " + userInfo);
+            }
         } // end else block
     }// end method: validate
 

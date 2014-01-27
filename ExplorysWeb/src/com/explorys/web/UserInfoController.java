@@ -66,15 +66,15 @@ public class UserInfoController extends AbstractController{
     	UserInfo userInfoCmd = new UserInfo();
     	String user_cd = (String)request.getParameter("userID");
     	logger.info("user code from page ===>" + user_cd);
-    	userInfoCmd.setUserID(user_cd);
+    	//userInfoCmd.setUserID(user_cd);
     	String group_no = (String)request.getParameter("groupNO");
     	logger.info("user's group number is ===>" + group_no);
-    	userInfoCmd.setGroupNO(group_no);
+    	//userInfoCmd.setGroupNO(group_no);
     	String device_id = (String)request.getParameter("deviceID");
     	logger.info("user's devide ID is ===>" + device_id);
-    	userInfoCmd.setDeviceID(device_id);
+    	//userInfoCmd.setDeviceID(device_id);
     	ArrayList surveyList = getUserSurveyList(user_cd);
-    	userInfoCmd.setSurveyList(surveyList);
+    	//userInfoCmd.setSurveyList(surveyList);
     	return new ModelAndView("survey", "userInfo", userInfoCmd);
 	}
 	

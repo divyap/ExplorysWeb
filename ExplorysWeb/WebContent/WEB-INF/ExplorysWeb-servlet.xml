@@ -34,10 +34,10 @@
 	<bean id="safetyTips" class="com.explorys.web.SafetyTipsController">
 	</bean>
 	<bean id="ui" class="com.explorys.web.JqueryUIController">
-	</bean>
-	<bean id="logonValidator" class="com.explorys.web.LogonValidator">
 	</bean> -->
-	<!-- <bean id="logonForm" class="com.explorys.web.LogonFormController">
+	<bean id="logonValidator" class="com.explorys.web.LogonValidator">
+	</bean>
+	<bean id="logonForm" class="com.explorys.web.LogonFormController">
 		<property name="sessionForm">
 			<value>true</value>
 		</property>
@@ -56,7 +56,7 @@
 		<property name="successView">
 			<value>home.htm</value>
 		</property>
-	</bean> -->
+	</bean>
 	<bean id="messageSource"
 		class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename">
@@ -72,7 +72,7 @@
 					<ref bean="master" />
 				</entry>
 				<entry key="/logon.htm">
-					<ref bean="master" />
+					<ref bean="logonForm" />
 				</entry>
 				<entry key="/patient.htm">
 					<ref bean="patinfo" />

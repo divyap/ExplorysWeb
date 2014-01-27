@@ -20,6 +20,7 @@ public class LogonFormController extends SimpleFormController {
 	
 	private final Log logger = LogFactory.getLog(getClass());
 	
+	@SuppressWarnings("deprecation")
 	public ModelAndView onSubmit(HttpServletRequest request,
             HttpServletResponse response,
             Object command,

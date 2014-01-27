@@ -8,10 +8,12 @@
 <%@ page import="org.springframework.context.ApplicationContext"%>
 <%@ page import="org.springframework.context.support.ClassPathXmlApplicationContext"%>
 <%@ page import="org.apache.commons.dbcp.BasicDataSource"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="core" uri="http://java.sun.com/jstl/core"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <%@ taglib prefix="str"	uri="http://jakarta.apache.org/taglibs/string-1.1"%>
-<%@ taglib prefix="spring" uri="/spring" %>
+
 <!DOCTYPE html>
 <html>
 <head>
