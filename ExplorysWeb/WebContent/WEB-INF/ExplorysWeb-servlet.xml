@@ -3,6 +3,12 @@
 <beans>
 	<bean id="master" class="com.explorys.web.MasterController">
 	</bean>
+	<bean id="logout" class="com.explorys.web.LogoutController">
+	</bean>
+	<bean id="census" class="com.explorys.web.CensusController">
+		<property name="appConfig" ref="appConfig" />
+	    <property name="restTemplate" ref="restTemplate"/>
+	</bean>
 	<bean id="patinfo" class="com.explorys.web.PatientInfoController">
 	    <property name="appConfig" ref="appConfig" />
 	    <property name="restTemplate" ref="restTemplate"/>
@@ -38,24 +44,8 @@
 	<bean id="logonValidator" class="com.explorys.web.LogonValidator">
 	</bean>
 	<bean id="logonForm" class="com.explorys.web.LogonFormController">
-		<property name="sessionForm">
-			<value>true</value>
-		</property>
-		<property name="commandName">
-			<value>credentials</value>
-		</property>
-		<property name="commandClass">
-			<value>com.explorys.business.Credentials</value>
-		</property>
-		<property name="validator">
-			<ref bean="logonValidator" />
-		</property>
-		<property name="formView">
-			<value>logon</value>
-		</property>
-		<property name="successView">
-			<value>home.htm</value>
-		</property>
+	   	<property name="appConfig" ref="appConfig" />
+	    <property name="restTemplate" ref="restTemplate"/>
 	</bean>
 	<bean id="messageSource"
 		class="org.springframework.context.support.ResourceBundleMessageSource">
@@ -68,6 +58,9 @@
 		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="urlMap">
 			<map>
+			    <entry key="/index.htm">
+					<ref bean="master" />
+				</entry>
 				<entry key="/home.htm">
 					<ref bean="master" />
 				</entry>
@@ -76,6 +69,12 @@
 				</entry>
 				<entry key="/patient.htm">
 					<ref bean="patinfo" />
+				</entry>
+				<entry key="/logout.htm">
+					<ref bean="logout" />
+				</entry>
+				<entry key="/census.htm">
+					<ref bean="census" />
 				</entry>
 			</map>
 		</property>

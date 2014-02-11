@@ -6,7 +6,7 @@
 <head>
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Teen Survey Administration Site</title>
+<title>Big Data Search Administration Site</title>
 <style type="text/css">
 .newStyle1 {
 	background-color: #99CCFF;
@@ -47,49 +47,55 @@
 </head>
 <body style="background-color: #D3EDEB">
 
+<% 
+  	com.explorys.business.UserInfo userInfo 
+    	= (com.explorys.business.UserInfo)pageContext.findAttribute("userInfo");
+	com.explorys.business.Credentials credentials 
+		= (com.explorys.business.Credentials)pageContext.findAttribute("credentials");	
+String userid = null;
+
+String errorMsg = null;
+
+if(credentials != null) {
+	errorMsg = credentials.getErrorMsg();
+}
+%>
 <center>
 <!--  
 <p class="style5">Teen Survey Administration Site</p>
 <br />
  -->
-<form method="post">
+<form method="post" action="logon.htm">
 <table width="25%" border="1">
 	<tr>
 		<td align="center" bgcolor="lightblue">Log on</td>
 	</tr>
 	<tr>
 		<td>
-		<table border="0" width="100%">
+		<table border="1" width="100%">
 			<tr>
 				<td width="33%" align="right">Username:</td>
-				<td width="66%" align="left"><spring:bind
-					path="credentials.username">
-					<input type="text" name="username"
-						value="<core:out value="${status.value}"/>" />
-				</spring:bind></td>
-
-			</tr>
-			<tr>
-				<td colspan="2" align="center"><spring:hasBindErrors
-					name="credentials">
-					<font color="red"><core:out value="${status.errorMessage}" /></font>
-				</spring:hasBindErrors></td>
+				<td width="67%" align="left">
+					<input type="text" name="username"	value="" />
+				</td>
 			</tr>
 			<tr>
 				<td width="33%" align="right">Password:</td>
-				<td width="66%" align="left"><spring:bind
-					path="credentials.password">
+				<td width="67%" align="left">
 					<input type="password" name="password" />
-				</spring:bind></td>
+				</td>
 			</tr>
+			<% if(errorMsg != null) {
+					
+				%>	
 			<tr>
-				<td colspan="2" align="center"><spring:hasBindErrors
-					name="credentials">
-					<font color="red"><core:out value="${status.errorMessage}" /></font>
-				</spring:hasBindErrors></td>
+				<td colspan="100%" align="center">
+					<font color="red"><%=errorMsg %> </font>
+				</td>
 			</tr>
+			<%} %>
 			<tr>
-				<td align="center" colspan="2"><input type="submit"
+				<td align="center" colspan="100%"><input type="submit"
 					alignment="center" value="Logon"></td>
 			</tr>
 		</table>

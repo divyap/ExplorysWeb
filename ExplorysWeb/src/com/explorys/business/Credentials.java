@@ -22,6 +22,14 @@ public class Credentials {
     
     private HttpSession session;
     
+    private String errorMsg;
+    
+    private UserInfo userInfo;
+    
+    private boolean successfulLogin = false;
+    
+    private String pwdErrMsg;
+    
     public String getPassword() {
         return password;
     }
@@ -78,6 +86,38 @@ public class Credentials {
 
 	public ArrayList<String> getMinistryList() {
 		return ministryList;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
+
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setUserInfo(UserInfo userInfo) {
+		this.userInfo = userInfo;
+	}
+
+	public UserInfo getUserInfo() {
+		return userInfo;
+	}
+
+	public void setSuccessfulLogin(boolean successfulLogin) {
+		this.successfulLogin = successfulLogin;
+	}
+
+	public boolean isSuccessfulLogin() {
+		return successfulLogin;
+	}
+
+	public void setPwdErrMsg(String pwdErrMsg) {
+		this.pwdErrMsg = pwdErrMsg;
+	}
+
+	public String getPwdErrMsg() {
+		return pwdErrMsg;
 	}
 
 }

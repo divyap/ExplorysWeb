@@ -8,6 +8,11 @@
 <%@ page import="org.springframework.context.ApplicationContext"%>
 <%@ page import="org.springframework.context.support.ClassPathXmlApplicationContext"%>
 <%@ page import="org.apache.commons.dbcp.BasicDataSource"%>
+<%@ page import="org.codehaus.jackson.map.ObjectMapper"%>
+<%@ page import="org.codehaus.jackson.JsonGenerationException"%>
+<%@ page import="org.codehaus.jackson.map.JsonMappingException"%>
+<%@ page import="org.codehaus.jackson.map.ObjectMapper"%>
+<%@ page import="java.io.IOException"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="core" uri="http://java.sun.com/jstl/core"%>
@@ -35,6 +40,11 @@
 <%
 System.out.println("======== Inside include.jsp page=====>");
 String user = (String)request.getSession().getAttribute("userId");
+Boolean login = (Boolean)request.getSession().getAttribute("login");
+boolean check = false;
+if(login != null) {
+	check = login.booleanValue();
+}
 
 %>
 <body style="background-color: #D3EDEB">
@@ -47,7 +57,7 @@ String user = (String)request.getSession().getAttribute("userId");
 <h1 style="text-align:center;">Explorys Web-Search </h1>
 <br>
 <%
-if (user == null) {
+if (user == null && (!check)) {
 	
 %>
 <hr style="color: #000000; text-align: center" style="height: -11px" />

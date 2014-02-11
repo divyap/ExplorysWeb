@@ -13,6 +13,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.explorys.business.Credentials;
+import com.explorys.business.UserInfo;
+
 
 public class LogoutController extends AbstractController{
 
@@ -43,13 +46,22 @@ public class LogoutController extends AbstractController{
 		// TODO Auto-generated method stub
    		logger.info("====== inside LogoutController-> onSubmit =======");
 		//String userId = (String)request.getAttribute("userId");
-
+   		Credentials credentials = null;
+   		UserInfo userInfo = new UserInfo();
+   		userInfo.setLogin(null);
 		HttpSession session = request.getSession();
 		String userId = (String)session.getAttribute("userId");
 		logger.info("loggedin user is ===>" + userId);
 		userId = null;
     	session.setAttribute("userId", userId);
-   		return new ModelAndView(new RedirectView("index.htm"));
+    	session.setAttribute("login", false);
+    	session.setAttribute("logout", true);
+    	Boolean logout = new Boolean(true);
+   		//return new ModelAndView(new RedirectView("index"));
+    	ModelAndView model = new ModelAndView("logon");
+    	model.addObject("userInfo", userInfo);
+    	model.addObject("logout", logout);
+    	return model;
 	}
 
 }

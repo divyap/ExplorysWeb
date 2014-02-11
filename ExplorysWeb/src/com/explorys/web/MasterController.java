@@ -133,15 +133,19 @@ public class MasterController extends AbstractController{
 			HttpServletResponse response) throws Exception {
 		// TODO Auto-generated method stub
   		logger.info("====== inside MasterController-> handleRequestInternal =======");
-		
+		ModelAndView model = null;
 		HttpSession session = request.getSession();
 
 		//@SuppressWarnings("rawtypes")
 		//ArrayList testData = getTestData();
-
-    	return new ModelAndView("index");
-
+		String userId = (String)session.getAttribute("userId");
+		if(userId == null) {
+			//user is not logged in. re-routing to login page.
+			model = new ModelAndView("logon");
+		}else {
+			model = new ModelAndView("index");
+		}
+    	return model;
 	}
-
   
 }
