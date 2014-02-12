@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+
 <!-- The HTML 4.01 Transitional DOCTYPE declaration-->
 <!-- above set at the top of the file will set     -->
 <!-- the browser's rendering engine into           -->
@@ -14,7 +15,12 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 
 <title>Big Data Search Administration Site</title>
-
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
+ <script type="text/javascript">
+      google.load('visualization', '1', {packages: ['corechart']});
+ </script>
 <style type="text/css">
 .newStyle1 {
 	background-color: #99CCFF;
@@ -37,8 +43,7 @@
 .style5 {
 	font-weight:bold;
 	text-align: center;
-	font-size: large;
-	font-family:arial;
+	font-size: x-large;
 }
 .style6 {
 	margin-top: 175px;
@@ -102,14 +107,51 @@
 	font-size: medium;
 }
 </style>
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
-</script>
-<script type="text/javascript">
-google.load('visualization', '1.0', {packages:['corechart']});
- </script>
-  <script type="text/javascript">
-    /*var transData;
+<% 
+  	com.explorys.business.UserInfo userInfo 
+    	= (com.explorys.business.UserInfo)pageContext.findAttribute("userInfo");
+	com.explorys.business.CensusInfo censusInfo 
+		= (com.explorys.business.CensusInfo)pageContext.findAttribute("censusInfo");
+	ArrayList<String> minList = (ArrayList<String>)pageContext.findAttribute("ministryList");
+	System.out.println("ministryList from session object==>" + minList);
+String userid = null;
+ArrayList<String> ministryList = null; 
+Map<String, Object> ministryMap = null;
+Map<String, Object> dateMap = null;
+Map<Integer, Integer> hourMap = null;
+String errorMsg = null;
+String jsonStr = null;
+if(userInfo != null) {
+	userid = userInfo.getUserid();
+	
+	ministryList = (ArrayList<String>)userInfo.getMinistryList();
+	System.out.println("user from userInfo object==>" + userid);
+	System.out.println("ministryList from userInfo object==>" + ministryList);
+}
+
+if(censusInfo != null) {
+	errorMsg = censusInfo.getErrorMsg();
+	ministryMap = censusInfo.getCensus();
+	System.out.println("errorMsg from censusInfo ==>" + errorMsg);
+}
+
+//converting Map to JSONObject
+ObjectMapper objectMapper = new ObjectMapper();
+try {
+	jsonStr =  objectMapper.writeValueAsString(ministryMap);
+} catch (JsonGenerationException e) {
+	e.printStackTrace();
+} catch (JsonMappingException e) {
+	e.printStackTrace();
+} catch (IOException e) {
+	e.printStackTrace();
+}
+
+System.out.println("JSON String on JSP==>" + jsonStr);
+
+%>
+    <script type="text/javascript">
+    var transData;
    	$(document).ready(function(){
    	   	var url = "http://localhost:8080/SJHSApp/rest/App/getCensusAll";
    		$("button").click(function(){
@@ -124,8 +166,7 @@ google.load('visualization', '1.0', {packages:['corechart']});
    		});
   	});
 
-    	function drawVisualization(result) {
-    		//alert("inside drawVisualization()");
+    	function drawVisualization() {
         // Some raw data (not necessarily accurate)
         var data = google.visualization.arrayToDataTable([
           ['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
@@ -141,41 +182,46 @@ google.load('visualization', '1.0', {packages:['corechart']});
           vAxis: {title: "# of Patients"},
           hAxis: {title: "Hour"},
           seriesType: "bars",
-          series: {5: {type: "line"}},
-          backgroundColor: "#D3EDEB",
-          chartArea: {left:20,top:0,width:"50%",height:"75%"},
-          width: 2000,
-          height: 700,
-          fontSize: 30,
-          italic: false
+          series: {5: {type: "line"}}
         };
 
-        var chart = new google.visualization.ComboChart(document.getElementById('census_chart'));
-        chart.draw(data, options);
+        //var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+        //chart.draw(data, options);
       }
       //google.setOnLoadCallback(drawVisualization);
       
-      */
       function loadChart(result) {
+    	  alert("inside loadChart method");
+    	  alert("inside loadChart method");
     	  //result is in JSON object format.
     	  var census = result.census;
     	  var minList = new Array();
-
+    	  //var day1 = result.census[0].day1;
+    	  //alert("day1==>" + day1);
+    	  //var day1census;
+    	  //var day2 = result.census[0].day2;
+    	  //alert("day1==>" + day1);
+    	  //var day2census;
     	  var rowMap = new Array();
     	  for(i=1; i<=24; i++) {
     		  var temp = new Array();
     		  temp[0] = i;
     		  rowMap[i] = temp;
-	   	  }
+    	  }
+    	  alert("rowMap before==>" + rowMap);
     	  minList[0] = "Hour";
-		  var len = 1;
+    	  alert("ministryList  before==>" + minList.toLocaleString());
+    	  var data = new google.visualization.DataTable();
+    	  data.addColumn('number', 'Hour');
+			
           for (var i in census) {
         	  var ministry = result.census[i].ministry;
-        	  //alert("ministry =>" + ministry);
-        	  minList[len]= ministry;
+        	  alert("ministry =>" + ministry);
+        	  minList.push(ministry);
+        	  data.addColumn('string', ministry);
         	  var day1temp = result.census[i].day1;
         	  var day2temp = result.census[i].day2;
-        	  //alert("day1 =>" + day1temp + " day2 =>" + day2temp);
+        	  alert("day1 =>" + day1temp + " day2 =>" + day2temp);
         	  if(day1temp != null){
         		  //alert("minstry=>" + ministry + " day1==" + day1temp);
         		  var countMap1 = result.census[i].day1census;
@@ -183,15 +229,10 @@ google.load('visualization', '1.0', {packages:['corechart']});
             		  if(countMap1[j] != null) {
             			  //alert("Hour=>" + j + " patientcount=>" + countMap1[j]);
             			  var tempArr = rowMap[j];
-            			  tempArr[len] = countMap1[j];
-            			  rowMap[j] = tempArr;
-            		  }else {
-            			  var tempArr = rowMap[j];
-            			  tempArr[len] = 0;
+            			  tempArr[i] = countMap1[j];
             			  rowMap[j] = tempArr;
             		  }
-            		 //alert("rowMap["+j+"]"+"["+len+"]==>" + rowMap[j][len]);
-              	  }
+            	  }
         	  }
         	  if(day2temp != null){
         		  var countMap2 = result.census[i].day2census;
@@ -200,152 +241,89 @@ google.load('visualization', '1.0', {packages:['corechart']});
             		  if(countMap2[k] != null) {
             			  //alert("Hour=>" + k + " patientcount=>" + countMap2[k]);
             			  var tempArr = rowMap[k];
-            			  tempArr[len] = countMap2[k];
-            			  rowMap[k] = tempArr;
-
-            		  }else {
-            			  var tempArr = rowMap[k];
-            			  tempArr[len] = 0;
+            			  tempArr[i] = countMap2[j];
             			  rowMap[k] = tempArr;
             		  }
-        			  //alert("rowMap["+k+"]"+"["+len+"]==>" + rowMap[k][len]);
             	  }
         	  }
-        	  len = len +1;
-          }// end of for loop
-          rowMap[0] = minList;
-          //var data = google.visualization.arrayToDataTable(rowMap);
 
-   		// determine the number of rows and columns.
-          var numRows = rowMap.length;
-          var numCols = rowMap[0].length;
-          //alert("number of rows==>" + numRows);
-          //alert("number of columns==>" + numCols);
-          
-          var data = new google.visualization.DataTable();
-
-          // all other columns are of type 'number'.
-		for (var a = 0; a < numCols; a++) {
-        	//alert("a=" + a);
-        	var col = rowMap[0][a].toString();
-			//alert("column added=>" + col);
-            data.addColumn('number', col);
-            //alert("column at 0 in google Table=>"  + data.getColumnLabel(a));
           }
-
-          // now add the rows.
-          for (var b = 1; b < numRows; b++) {
-        	//alert("row added=>" + rowMap[b]);
-            data.addRow(rowMap[b]);            
-          }
-          
-           var options = {
-        		 legend: {position: 'in', textStyle: {color: 'blue', fontName: 'Times-Roman', fontSize: 16, italic: false}},
-        		 annotations: {
-        			 
-        			    textStyle: {
-        			      fontName: 'Times-Roman',
-        			      fontSize: 15,
-        			      bold: true,
-        			      italic: false,
-        			      color: '#871b47',     // The color of the text.
-        			      auraColor: '#d799ae', // The color of the text outline.
-        			      opacity: 0.8          // The transparency of the text.
-        			    }
-        			  },
+          alert(minList.toLocaleString());
+          alert(rowMap);
+          for(i=1; i<=24; i++) {
+    		  var temp = rowMap[i];
+    		  data.addRows([i],temp);
+    	  }
+          var options = {
                   title : 'Patient Census by Hour',
-                  vAxis: {title: "# of Patients", titleTextStyle: {color: '#FF0000'}, textPosition: 'in'},
-                  hAxis: {title: 'Hour of a day', titleTextStyle: {color: '#FF0000'}, textPosition: 'in', textStyle: {color: 'black',
-                	  fontName: 'Arial',
-                	  fontSize: 30,
-                	  bold: true,
-                	  italic: false}},
-                  seriesType: "area",
-                  series: {6: {type: "line"}},
-                  fontName: 'Arial',
-                  //backgroundColor: "#F0F8FF",
-                  chartArea: {left:50,top:30,width:"100%",height:"80%"},
-                  width: 1000,
-                  height: 1000,
-                  fontSize: 30,
-                  italic: false
+                  vAxis: {title: "# of Patients"},
+                  hAxis: {title: "Hour"},
+                  seriesType: "bars",
+                  series: {5: {type: "line"}}
                 };
-           var chart = new google.visualization.ComboChart(document.getElementById('census_chart'));
-           // redraw the chart.
-           chart.draw(data, options);
+
+                var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+      
       }
       
       function getCensus() {
-    	  var url = null;
+    	  var url;
     	  var ministry = document.getElementById("ministry").value;
-    	  //alert(ministry);
-    	  if(ministry == 'ALL') {
+    	  alert(ministry);
+    	  if(ministry = 'ALL') {
     		  url = "http://localhost:8080/SJHSApp/rest/App/getCensusAll";
      	  }else {
      		 url = "http://localhost:8080/SJHSApp/rest/App/getCensus?ministry=" + ministry;
      	  }
-    	  //alert(url);
+    	  alert(url);
     	  $.getJSON(url,function(result){
     		  google.setOnLoadCallback(loadChart(result));
     		  //loadChart(result);
-    		  //google.setOnLoadCallback(drawVisualization(result));
  		    });
       }
       
       
   </script>
 </head>
-<% 
-  	com.explorys.business.UserInfo userInfo 
-    	= (com.explorys.business.UserInfo)pageContext.findAttribute("userInfo");
-	com.explorys.business.Credentials credentials 
-		= (com.explorys.business.Credentials)pageContext.findAttribute("credentials");	
-String userid = null;
-ArrayList<String> ministryList = null; 
-String errorMsg = null;
-if(userInfo != null) {
-	userid = userInfo.getUserid();
-	ministryList = (ArrayList<String>)userInfo.getMinistryList();
-}
-
-if(credentials != null) {
-	errorMsg = credentials.getErrorMsg();
-}
-%>
+<body>
 <br>
 <center>
 <br>
-<b>Patient Census by Ministry</b>
-<br>
 
-<form>
+<b>Patient Census by Ministry</b>
+
+<br>
+<button>Get JSON data</button>
+<div></div>
+<br></br>
+<div id="json"></div>
+<br></br>
+<form method="post" action="census.htm">
 Ministry List: &nbsp;&nbsp;&nbsp;
 <select name="ministry">
     <option value="" disabled="disabled" selected="selected">Please select a ministry</option>
-    <option value="ALL">All Ministries</option>
+    <option value="ALL">ALL</option>
 <%
-if(ministryList != null) {
-	int size = ministryList.size();
+if(minList != null) {
+	int size = minList.size();
 	for(int i =0; i <size; i++) {
-		String ministry = ministryList.get(i);
+		String ministry = minList.get(i);
 %>
-<option value="<%=ministry %>"><%= ministry %></option>
 
+<option value="<%=ministry %>"><%= ministry %></option>
 <%
 	}
 }
 %>
-    
+
 </select>
 &nbsp;&nbsp;&nbsp;
-<input type="button" value="Patient Census" align="center" style=" text-align: center; font-weight:bold; width: 125px; height: 40px" onclick="getCensus()">     
+<input type="submit" value="Patient Census" align="center" style=" text-align: center; font-weight:bold; width: 125px; height: 40px" onclick="getCensus()">     
 </form>
+<div id="chart_div" style="width: 900px; height: 500px;"></div>  
 <br>
 <br>
-<br></br>
-<div id="census_chart" style="style5"></div>
-<br></br>
-
 
 <form method="post" action="patient.htm">
 Patient Search: &nbsp;&nbsp;&nbsp;

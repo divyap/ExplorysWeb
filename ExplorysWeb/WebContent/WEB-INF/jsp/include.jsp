@@ -47,14 +47,14 @@ if(login != null) {
 }
 
 %>
-<body style="background-color: #D3EDEB">
+<body style="background-color: #F0F8FF">
 
 <img alt="" class="style11" height="125" src="/ExplorysWeb/images/SJHS-logo.jpg" width="175" style="float: left">&nbsp;&nbsp;&nbsp;
 <br>
 <p style="style8" style="height: 22px"><em style="margin-left: 640px"></em>
 </p>
 <br>
-<h1 style="text-align:center;">Explorys Web-Search </h1>
+<h1 style="text-align:center;">SJHS Patient Census </h1>
 <br>
 <%
 if (user == null && (!check)) {
